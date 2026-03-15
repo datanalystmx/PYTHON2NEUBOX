@@ -1,1 +1,65 @@
+name: NBA Scrapers
 
+on:
+  schedule:
+    - cron: '0 12 * * *'
+  workflow_dispatch:
+
+jobs:
+
+  scraper_nba:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Instalar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Instalar dependencias
+        run: pip install nba_api requests pandas pytz openpyxl
+
+      - name: Correr Scraper NBA
+        run: python Scraper_NBA.py
+
+      - name: Subir JSONs a Neubox via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ftp.nexus-core.com.mx
+          username: ftpdata@nexus-core.com.mx
+          password: ${{ secrets.FTP_PASS }}
+          local-dir: ./data/
+          server-dir: /
+          exclude: |
+            **/.git*
+            **/.git*/**
+
+  scraper_injuries:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Instalar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Instalar dependencias
+        run: pip install requests pdfplumber
+
+      - name: Correr Injury Scraper
+        run: python injury_scraper.py
+
+      - name: Subir injury_cache.json a Neubox via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ftp.nexus-core.com.mx
+          username: ftpdata@nexus-core.com.mx
+          password: ${{ secrets.FTP_PASS }}
+          local-dir: ./
+          server-dir: /
+          include: |
+            injury_cache.json
