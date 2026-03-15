@@ -124,11 +124,22 @@ def ftp_upload(local_path, remote_filename):
     except Exception as e:
         print(f"  ❌ FTP ERROR {remote_filename}: {e}")
 
+def clean_nan(obj):
+    """Reemplaza NaN/Inf por None recursivamente para generar JSON válido."""
+    import math
+    if isinstance(obj, float):
+        return None if (math.isnan(obj) or math.isinf(obj)) else obj
+    if isinstance(obj, dict):
+        return {k: clean_nan(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [clean_nan(v) for v in obj]
+    return obj
+
 def guardar_json(nombre, datos):
     filename   = nombre + '.json'
     local_path = LOCAL_DIR + filename
     with open(local_path, 'w', encoding='utf-8') as f:
-        json.dump(datos, f, ensure_ascii=False, indent=2, default=str)
+        json.dump(clean_nan(datos), f, ensure_ascii=False, indent=2, default=str)
     size = len(datos) if isinstance(datos, (dict, list)) else '?'
     print(f"  💾 {filename}: {size} entradas")
     ftp_upload(local_path, filename)
@@ -178,7 +189,7 @@ try:
         'updated_at': datetime.now().isoformat(),
     }
     with open(LAST_GAMES, 'w', encoding='utf-8') as f:
-        json.dump(last_games_data, f, ensure_ascii=False, indent=2)
+        json.dump(clean_nan(last_games_data), f, ensure_ascii=False, indent=2)
     ftp_upload(LAST_GAMES, 'last_games.json')
     print(f"  last_games.json — {len(b2b_teams)} equipos: {b2b_teams}")
 except Exception as e:
@@ -614,9 +625,9 @@ if 'Daily_Schedule' in all_sheets:
     filename      = 'daily_schedule.json'
     local_path    = LOCAL_DIR + filename
     with open(local_path, 'w', encoding='utf-8') as f:
-        json.dump(schedule_json, f, ensure_ascii=False, indent=2, default=str)
+        json.dump(clean_nan(schedule_json), f, ensure_ascii=False, indent=2, default=str)
     print(f"  💾 {filename}: {len(juegos_lista)} juegos")
     ftp_upload(local_path, filename)
 
 print(f"\n✅ LISTO — {len(all_sheets)} hojas procesadas")
-print(f"JSONs subidos a Neubox: {FTP_HOST}{FTP_DIR}")
+print(f"JSONs subidos a Neubox: {FTP_HOST}{FTP_DIR}") 
