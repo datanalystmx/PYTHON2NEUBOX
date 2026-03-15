@@ -29,7 +29,7 @@ LAST_GAMES  = './last_games.json'
 FTP_HOST = 'ftp.nexus-core.com.mx'
 FTP_USER = 'servicios@nexus-core.com.mx'
 FTP_PASS = os.environ.get('FTP_PASS', 'S3rvic3$1984*$*')
-FTP_DIR  = '/home/nexuscor/public_html/data/'   # carpeta destino en Neubox
+FTP_DIR  = '/home/nexuscor/public_html/data/'
 
 # ── Proxies Webshare ──────────────────────────────────────────
 PROXIES_LIST = [
