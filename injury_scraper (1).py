@@ -23,7 +23,7 @@ OUTPUT_FILE = './injury_cache.json'
 FTP_HOST = 'ftp.nexus-core.com.mx'
 FTP_USER = 'servicios@nexus-core.com.mx'
 FTP_PASS = os.environ.get('FTP_PASS', 'S3rvic3$1984*$*')
-FTP_DIR  = '/public_html/data/'
+FTP_DIR  = '/home/nexuscor/public_html/data/'
 
 HEADERS = {
     'User-Agent': (
