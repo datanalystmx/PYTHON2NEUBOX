@@ -27,9 +27,9 @@ LAST_GAMES  = './last_games.json'
 
 # ── FTP Neubox ────────────────────────────────────────────────
 FTP_HOST = 'ftp.nexus-core.com.mx'
-FTP_USER = 'servicios@nexus-core.com.mx'
-FTP_PASS = os.environ.get('FTP_PASS', 'S3rvic3$1984*$*')
-FTP_DIR  = 'public_html/data/'
+FTP_USER = 'ftpdata@nexus-core.com.mx'
+FTP_PASS = os.environ.get('FTP_PASS', 'NbaData2026!')
+FTP_DIR  = '/'   # el usuario ya entra directo en public_html/data
 
 # ── Proxies Webshare ──────────────────────────────────────────
 PROXIES_LIST = [
@@ -93,7 +93,13 @@ def ftp_upload(local_path, remote_filename):
         ftp.connect(FTP_HOST, 21, timeout=30)
         ftp.login(FTP_USER, FTP_PASS)
         ftp.set_pasv(True)
-        ftp.cwd(FTP_DIR)
+        # Navegar carpeta por carpeta creando si no existe
+        for folder in FTP_DIR.strip('/').split('/'):
+            try:
+                ftp.cwd(folder)
+            except:
+                ftp.mkd(folder)
+                ftp.cwd(folder)
         with open(local_path, 'rb') as f:
             ftp.storbinary(f'STOR {remote_filename}', f)
         ftp.quit()
